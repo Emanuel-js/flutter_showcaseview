@@ -25,3 +25,5 @@ library showcaseview;
 export 'src/enum.dart';
 export 'src/showcase.dart';
 export 'src/showcase_widget.dart';
+export 'src/custom_showcase.dart';
+export 'src/custom_showcase_widget.dart';

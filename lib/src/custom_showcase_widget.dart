@@ -24,7 +24,8 @@ import 'package:flutter/material.dart';
 
 import '../showcaseview.dart';
 
-class ShowCaseWidget extends StatefulWidget {
+class CustomShowCaseWidget extends StatefulWidget {
+
   final Builder builder;
 
   /// Triggered when all the showcases are completed.
@@ -85,7 +86,11 @@ class ShowCaseWidget extends StatefulWidget {
 
   final int totalWidgets;
 
-  const ShowCaseWidget({
+
+
+
+
+  const CustomShowCaseWidget({
     required this.builder,
     this.totalWidgets = 0,
     this.onFinish,
@@ -109,8 +114,8 @@ class ShowCaseWidget extends StatefulWidget {
         ?.activeWidgetIds;
   }
 
-  static ShowCaseWidgetState of(BuildContext context) {
-    final state = context.findAncestorStateOfType<ShowCaseWidgetState>();
+  static CustomShowCaseWidgetState of(BuildContext context) {
+    final state = context.findAncestorStateOfType<CustomShowCaseWidgetState>();
     if (state != null) {
       return state;
     } else {
@@ -119,10 +124,10 @@ class ShowCaseWidget extends StatefulWidget {
   }
 
   @override
-  ShowCaseWidgetState createState() => ShowCaseWidgetState();
+  CustomShowCaseWidgetState createState() => CustomShowCaseWidgetState();
 }
 
-class ShowCaseWidgetState extends State<ShowCaseWidget> {
+class CustomShowCaseWidgetState extends State<CustomShowCaseWidget> {
   List<GlobalKey>? ids;
   int? activeWidgetId;
   late bool autoPlay;
@@ -134,7 +139,7 @@ class ShowCaseWidgetState extends State<ShowCaseWidget> {
   late bool disableBarrierInteraction;
   late bool enableShowcase;
 
-  /// Returns value of  [ShowCaseWidget.blurValue]
+  /// Returns value of  [CustomShowCaseWidget.blurValue]
   double get blurValue => widget.blurValue;
 
   int get totalWidgets => widget.totalWidgets;
@@ -150,7 +155,7 @@ class ShowCaseWidgetState extends State<ShowCaseWidget> {
   }
 
   @override
-  void didUpdateWidget(covariant ShowCaseWidget oldWidget) {
+  void didUpdateWidget(covariant CustomShowCaseWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
     _init();
   }
