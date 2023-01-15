@@ -275,9 +275,9 @@ class Showcase extends StatefulWidget {
     this.tooltipPosition,
     this.titlePadding,
     this.descriptionPadding,
+    this.container,
   })  : height = null,
         width = null,
-        container = null,
         assert(overlayOpacity >= 0.0 && overlayOpacity <= 1.0,
             "overlay opacity must be between 0 and 1."),
         assert(
@@ -343,8 +343,6 @@ class Showcase extends StatefulWidget {
 }
 
 class _ShowcaseState extends State<Showcase> {
-
-
   bool _showShowCase = false;
   bool _isScrollRunning = false;
   bool _isTooltipDismissed = false;
@@ -441,8 +439,6 @@ class _ShowcaseState extends State<Showcase> {
     showCaseWidgetState.completed(widget.key);
   }
 
-
-
   Future<void> _getOnTargetTap() async {
     if (widget.disposeOnTap == true) {
       await _reverseAnimateTooltip();
@@ -455,8 +451,8 @@ class _ShowcaseState extends State<Showcase> {
 
   Future<void> _getOnTooltipTap() async {
     //if (widget.disposeOnTap == true) {
-      await _reverseAnimateTooltip();
-      showCaseWidgetState.dismiss();
+    await _reverseAnimateTooltip();
+    showCaseWidgetState.dismiss();
     //}
     //widget.onToolTipClick?.call();
   }
@@ -543,42 +539,40 @@ class _ShowcaseState extends State<Showcase> {
                 ),
               if (!_isScrollRunning)
                 ToolTipWidget(
-                  position: position,
-                  offset: offset,
-                  screenSize: screenSize,
-                  title: widget.title,
-                  titleAlignment: widget.titleAlignment,
-                  description: widget.description,
-                  descriptionAlignment: widget.descriptionAlignment,
-                  titleTextStyle: widget.titleTextStyle,
-                  descTextStyle: widget.descTextStyle,
-                  container: widget.container,
-                  tooltipBackgroundColor: widget.tooltipBackgroundColor,
-                  textColor: widget.textColor,
-                  showArrow: widget.showArrow,
-                  contentHeight: widget.height,
-                  contentWidth: widget.width,
-                  onTooltipTap: _getOnTooltipTap,
-                  tooltipPadding: widget.tooltipPadding,
-                  disableMovingAnimation: widget.disableMovingAnimation ??
-                      showCaseWidgetState.disableMovingAnimation,
-                  disableScaleAnimation: widget.disableScaleAnimation ??
-                      showCaseWidgetState.disableScaleAnimation,
-                  movingAnimationDuration: widget.movingAnimationDuration,
-                  tooltipBorderRadius: widget.tooltipBorderRadius,
-                  scaleAnimationDuration: widget.scaleAnimationDuration,
-                  scaleAnimationCurve: widget.scaleAnimationCurve,
-                  scaleAnimationAlignment: widget.scaleAnimationAlignment,
-                  isTooltipDismissed: _isTooltipDismissed,
-                  tooltipPosition: widget.tooltipPosition,
-                  titlePadding: widget.titlePadding,
-                  descriptionPadding: widget.descriptionPadding,
-                  onNext: _nextIfAny
-                ),
+                    position: position,
+                    offset: offset,
+                    screenSize: screenSize,
+                    title: widget.title,
+                    titleAlignment: widget.titleAlignment,
+                    description: widget.description,
+                    descriptionAlignment: widget.descriptionAlignment,
+                    titleTextStyle: widget.titleTextStyle,
+                    descTextStyle: widget.descTextStyle,
+                    container: widget.container,
+                    tooltipBackgroundColor: widget.tooltipBackgroundColor,
+                    textColor: widget.textColor,
+                    showArrow: widget.showArrow,
+                    contentHeight: widget.height,
+                    contentWidth: widget.width,
+                    onTooltipTap: _getOnTooltipTap,
+                    tooltipPadding: widget.tooltipPadding,
+                    disableMovingAnimation: widget.disableMovingAnimation ??
+                        showCaseWidgetState.disableMovingAnimation,
+                    disableScaleAnimation: widget.disableScaleAnimation ??
+                        showCaseWidgetState.disableScaleAnimation,
+                    movingAnimationDuration: widget.movingAnimationDuration,
+                    tooltipBorderRadius: widget.tooltipBorderRadius,
+                    scaleAnimationDuration: widget.scaleAnimationDuration,
+                    scaleAnimationCurve: widget.scaleAnimationCurve,
+                    scaleAnimationAlignment: widget.scaleAnimationAlignment,
+                    isTooltipDismissed: _isTooltipDismissed,
+                    tooltipPosition: widget.tooltipPosition,
+                    titlePadding: widget.titlePadding,
+                    descriptionPadding: widget.descriptionPadding,
+                    onNext: _nextIfAny),
             ],
           )
         : const SizedBox.shrink();
-
   }
 }
 

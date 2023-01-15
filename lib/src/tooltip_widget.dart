@@ -1,9 +1,6 @@
-
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:local_showcaseview/showcaseview.dart';
 
 import 'enum.dart';
 import 'get_position.dart';
@@ -111,9 +108,7 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
             : TooltipPosition.bottom);
   }
 
-
   void _getTooltipWidth() {
-
     final titleStyle = widget.titleTextStyle ??
         Theme.of(context)
             .textTheme
@@ -394,7 +389,7 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                           borderRadius: widget.tooltipBorderRadius ??
                               BorderRadius.circular(8.0),
                           child: GestureDetector(
-                            onTap:() {
+                            onTap: () {
                               //widget.onTooltipTap
                             },
                             child: Container(
@@ -406,10 +401,9 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                                     ? CrossAxisAlignment.start
                                     : CrossAxisAlignment.center,
                                 children: <Widget>[
-
                                   IconButton(
                                       onPressed: widget.onTooltipTap,
-                                    // (){
+                                      // (){
                                       //   print("hu");
                                       //   //widget.onTooltipTap;
                                       //   //widget.onTooltipTap;
@@ -417,15 +411,11 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                                       //   //ShowCaseWidget.of(context).dismiss();
                                       //   //_nextIfAny();
                                       // },
-                                      icon: Icon(Icons.close)),
-
+                                      icon: const Icon(Icons.close)),
                                   ElevatedButton(
-                                    style: const ButtonStyle(
-
-                                    ),
-                                    child: Text("Next"),
-                                    onPressed: widget.onNext
-                                  ),
+                                      style: const ButtonStyle(),
+                                      onPressed: widget.onNext,
+                                      child: Text("Next")),
                                   widget.title != null
                                       ? Padding(
                                           padding: widget.titlePadding ??
@@ -494,9 +484,9 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                 child: Material(
                   color: Colors.transparent,
                   child: GestureDetector(
-                    onTap: (){
+                    onTap: () {
                       //widget.onTooltipTap
-                      },
+                    },
                     child: Container(
                       padding: EdgeInsets.only(
                         top: paddingTop,

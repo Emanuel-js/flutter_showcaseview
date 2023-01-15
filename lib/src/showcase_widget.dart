@@ -22,7 +22,7 @@
 
 import 'package:flutter/material.dart';
 
-import '../showcaseview.dart';
+import '../flutter_showcaseview.dart';
 
 class ShowCaseWidget extends StatefulWidget {
   final Builder builder;
