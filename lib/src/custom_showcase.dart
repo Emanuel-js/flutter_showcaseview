@@ -26,15 +26,14 @@ import 'dart:ui';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import 'enum.dart';
+import '../flutter_showcaseview.dart';
+import 'custom_tooltip_widget.dart';
 import 'extension.dart';
 import 'get_position.dart';
 import 'layout_overlays.dart';
 import 'shape_clipper.dart';
-import 'showcase_widget.dart';
-import 'tooltip_widget.dart';
 
-class Showcase extends StatefulWidget {
+class CustomShowcase extends StatefulWidget {
   @override
 
   /// A key that is unique across the entire app.
@@ -43,6 +42,8 @@ class Showcase extends StatefulWidget {
   /// used in [ShowCaseWidgetState.startShowCase] to define position of current
   /// target widget while showcasing.
   final GlobalKey key;
+
+  final int currentWidgetId;
 
   /// Target widget that will be showcased or highlighted
   final Widget child;
@@ -81,7 +82,7 @@ class Showcase extends StatefulWidget {
 
   /// Empty space around tooltip content.
   ///
-  /// Default Value for [Showcase] widget is:
+  /// Default Value for [CustomShowcase] widget is:
   /// ```dart
   /// EdgeInsets.symmetric(vertical: 8, horizontal: 8)
   /// ```
@@ -232,13 +233,24 @@ class Showcase extends StatefulWidget {
 
   /// Provides padding around the description. Default padding is zero.
   final EdgeInsets? descriptionPadding;
+  final Widget buttonWidget;
+  final bool? isLast;
+  final TextStyle? indctorStyle;
+  final EdgeInsets? indctorPadding;
 
-  const Showcase({
+  final ButtonStyle? buttonStyle;
+  final int totalWidgetsID;
+  const CustomShowcase({
     required this.key,
     required this.child,
+    required this.currentWidgetId,
+    required this.buttonWidget,
+    this.isLast = false,
     this.title,
+    this.buttonStyle,
     this.titleAlignment = TextAlign.start,
     required this.description,
+    this.totalWidgetsID = 5,
     this.descriptionAlignment = TextAlign.start,
     this.targetShapeBorder = const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
@@ -259,6 +271,7 @@ class Showcase extends StatefulWidget {
     this.movingAnimationDuration = const Duration(milliseconds: 2000),
     this.disableMovingAnimation,
     this.disableScaleAnimation,
+    this.indctorStyle,
     this.tooltipPadding =
         const EdgeInsets.symmetric(vertical: 8, horizontal: 8),
     this.onToolTipClick,
@@ -273,11 +286,12 @@ class Showcase extends StatefulWidget {
     this.scaleAnimationCurve = Curves.easeIn,
     this.scaleAnimationAlignment,
     this.tooltipPosition,
+    this.indctorPadding,
     this.titlePadding,
     this.descriptionPadding,
-    this.container,
   })  : height = null,
         width = null,
+        container = null,
         assert(overlayOpacity >= 0.0 && overlayOpacity <= 1.0,
             "overlay opacity must be between 0 and 1."),
         assert(
@@ -291,12 +305,16 @@ class Showcase extends StatefulWidget {
                 : (onTargetClick == null ? false : true),
             "onTargetClick is required if you're using disposeOnTap");
 
-  const Showcase.withWidget({
+  const CustomShowcase.withWidget({
     required this.key,
+    required this.currentWidgetId,
     required this.child,
     required this.container,
     required this.height,
     required this.width,
+    this.indctorStyle,
+    this.buttonStyle,
+    this.isLast = false,
     this.targetShapeBorder = const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(
         Radius.circular(8),
@@ -316,9 +334,11 @@ class Showcase extends StatefulWidget {
     this.onTargetLongPress,
     this.onTargetDoubleTap,
     this.disableDefaultTargetGestures = false,
+    required this.buttonWidget,
     this.tooltipPosition,
   })  : showArrow = false,
         onToolTipClick = null,
+        totalWidgetsID = 5,
         scaleAnimationDuration = const Duration(milliseconds: 300),
         scaleAnimationCurve = Curves.decelerate,
         scaleAnimationAlignment = null,
@@ -335,14 +355,15 @@ class Showcase extends StatefulWidget {
         tooltipPadding = const EdgeInsets.symmetric(vertical: 8),
         titlePadding = null,
         descriptionPadding = null,
+        indctorPadding = null,
         assert(overlayOpacity >= 0.0 && overlayOpacity <= 1.0,
             "overlay opacity must be between 0 and 1.");
 
   @override
-  State<Showcase> createState() => _ShowcaseState();
+  State<CustomShowcase> createState() => _CustomShowcaseState();
 }
 
-class _ShowcaseState extends State<Showcase> {
+class _CustomShowcaseState extends State<CustomShowcase> {
   bool _showShowCase = false;
   bool _isScrollRunning = false;
   bool _isTooltipDismissed = false;
@@ -457,6 +478,11 @@ class _ShowcaseState extends State<Showcase> {
     widget.onToolTipClick?.call();
   }
 
+  Future<void> _onDismiss() async {
+    await _reverseAnimateTooltip();
+    showCaseWidgetState.dismiss();
+  }
+
   /// Reverse animates the provided tooltip or
   /// the custom container widget.
   Future<void> _reverseAnimateTooltip() async {
@@ -538,38 +564,47 @@ class _ShowcaseState extends State<Showcase> {
                       widget.disableDefaultTargetGestures,
                 ),
               if (!_isScrollRunning)
-                ToolTipWidget(
-                  position: position,
-                  offset: offset,
-                  screenSize: screenSize,
-                  title: widget.title,
-                  titleAlignment: widget.titleAlignment,
-                  description: widget.description,
-                  descriptionAlignment: widget.descriptionAlignment,
-                  titleTextStyle: widget.titleTextStyle,
-                  descTextStyle: widget.descTextStyle,
-                  container: widget.container,
-                  tooltipBackgroundColor: widget.tooltipBackgroundColor,
-                  textColor: widget.textColor,
-                  showArrow: widget.showArrow,
-                  contentHeight: widget.height,
-                  contentWidth: widget.width,
-                  onTooltipTap: _getOnTooltipTap,
-                  tooltipPadding: widget.tooltipPadding,
-                  disableMovingAnimation: widget.disableMovingAnimation ??
-                      showCaseWidgetState.disableMovingAnimation,
-                  disableScaleAnimation: widget.disableScaleAnimation ??
-                      showCaseWidgetState.disableScaleAnimation,
-                  movingAnimationDuration: widget.movingAnimationDuration,
-                  tooltipBorderRadius: widget.tooltipBorderRadius,
-                  scaleAnimationDuration: widget.scaleAnimationDuration,
-                  scaleAnimationCurve: widget.scaleAnimationCurve,
-                  scaleAnimationAlignment: widget.scaleAnimationAlignment,
-                  isTooltipDismissed: _isTooltipDismissed,
-                  tooltipPosition: widget.tooltipPosition,
-                  titlePadding: widget.titlePadding,
-                  descriptionPadding: widget.descriptionPadding,
-                ),
+                CustomToolTipWidget(
+                    indctorStyle: widget.indctorStyle!,
+                    buttonWidget: widget.buttonWidget,
+                    currentWidgetId: widget.currentWidgetId,
+                    position: position,
+                    offset: offset,
+                    screenSize: screenSize,
+                    title: widget.title,
+                    titleAlignment: widget.titleAlignment,
+                    description: widget.description,
+                    descriptionAlignment: widget.descriptionAlignment,
+                    titleTextStyle: widget.titleTextStyle,
+                    descTextStyle: widget.descTextStyle,
+                    container: widget.container,
+                    tooltipBackgroundColor: widget.tooltipBackgroundColor,
+                    textColor: widget.textColor,
+                    showArrow: widget.showArrow,
+                    contentHeight: widget.height,
+                    contentWidth: widget.width,
+                    onTooltipTap: _getOnTooltipTap,
+                    tooltipPadding: widget.tooltipPadding,
+                    disableMovingAnimation: widget.disableMovingAnimation ??
+                        showCaseWidgetState.disableMovingAnimation,
+                    disableScaleAnimation: widget.disableScaleAnimation ??
+                        showCaseWidgetState.disableScaleAnimation,
+                    movingAnimationDuration: widget.movingAnimationDuration,
+                    tooltipBorderRadius: widget.tooltipBorderRadius,
+                    scaleAnimationDuration: widget.scaleAnimationDuration,
+                    scaleAnimationCurve: widget.scaleAnimationCurve,
+                    scaleAnimationAlignment: widget.scaleAnimationAlignment,
+                    isTooltipDismissed: _isTooltipDismissed,
+                    tooltipPosition: widget.tooltipPosition,
+                    titlePadding: widget.titlePadding,
+                    descriptionPadding: widget.descriptionPadding,
+                    onNext: _nextIfAny,
+                    onDismiss: _onDismiss,
+                    isLast: widget.isLast,
+                    buttonStyle: widget.buttonStyle,
+                    //totalWidgets: showCaseWidgetState.totalWidgets,
+                    totalWidgets: widget.totalWidgetsID,
+                    indctorPadding: widget.indctorPadding),
             ],
           )
         : const SizedBox.shrink();

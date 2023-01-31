@@ -1,42 +1,20 @@
-/*
- * Copyright (c) 2021 Simform Solutions
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be
- * included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
-
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-
 import 'enum.dart';
 import 'get_position.dart';
 import 'measure_size.dart';
 
 const _kDefaultPaddingFromParent = 14.0;
 
-class ToolTipWidget extends StatefulWidget {
+class CustomToolTipWidget extends StatefulWidget {
   final GetPosition? position;
   final Offset? offset;
   final Size? screenSize;
   final String? title;
   final TextAlign? titleAlignment;
   final String? description;
+  final Widget buttonWidget;
   final TextAlign? descriptionAlignment;
   final TextStyle? titleTextStyle;
   final TextStyle? descTextStyle;
@@ -59,44 +37,61 @@ class ToolTipWidget extends StatefulWidget {
   final TooltipPosition? tooltipPosition;
   final EdgeInsets? titlePadding;
   final EdgeInsets? descriptionPadding;
+  final VoidCallback? onNext;
+  final VoidCallback? onDismiss;
+  final bool? isLast;
+  final ButtonStyle? buttonStyle;
+  final int? currentWidgetId;
+  final int? totalWidgets;
+  final TextStyle indctorStyle;
+  final EdgeInsets? indctorPadding;
 
-  const ToolTipWidget({
-    Key? key,
-    required this.position,
-    required this.offset,
-    required this.screenSize,
-    required this.title,
-    required this.titleAlignment,
-    required this.description,
-    required this.titleTextStyle,
-    required this.descTextStyle,
-    required this.container,
-    required this.tooltipBackgroundColor,
-    required this.textColor,
-    required this.showArrow,
-    required this.contentHeight,
-    required this.contentWidth,
-    required this.onTooltipTap,
-    required this.movingAnimationDuration,
-    required this.descriptionAlignment,
-    this.tooltipPadding = const EdgeInsets.symmetric(vertical: 8),
-    required this.disableMovingAnimation,
-    required this.disableScaleAnimation,
-    required this.tooltipBorderRadius,
-    required this.scaleAnimationDuration,
-    required this.scaleAnimationCurve,
-    this.scaleAnimationAlignment,
-    this.isTooltipDismissed = false,
-    this.tooltipPosition,
-    this.titlePadding,
-    this.descriptionPadding,
-  }) : super(key: key);
+  const CustomToolTipWidget(
+      {Key? key,
+      required this.currentWidgetId,
+      required this.totalWidgets,
+      required this.position,
+      required this.offset,
+      required this.screenSize,
+      required this.buttonWidget,
+      required this.title,
+      required this.titleAlignment,
+      required this.description,
+      required this.titleTextStyle,
+      required this.descTextStyle,
+      required this.container,
+      required this.tooltipBackgroundColor,
+      required this.textColor,
+      required this.showArrow,
+      required this.contentHeight,
+      required this.contentWidth,
+      required this.onTooltipTap,
+      required this.movingAnimationDuration,
+      required this.descriptionAlignment,
+      this.tooltipPadding = const EdgeInsets.symmetric(vertical: 8),
+      required this.disableMovingAnimation,
+      required this.disableScaleAnimation,
+      required this.tooltipBorderRadius,
+      required this.scaleAnimationDuration,
+      required this.scaleAnimationCurve,
+      required this.onNext,
+      required this.onDismiss,
+      required this.buttonStyle,
+      this.isLast = false,
+      this.scaleAnimationAlignment,
+      this.isTooltipDismissed = false,
+      this.tooltipPosition,
+      this.titlePadding,
+      this.descriptionPadding,
+      this.indctorPadding,
+      required this.indctorStyle})
+      : super(key: key);
 
   @override
-  State<ToolTipWidget> createState() => _ToolTipWidgetState();
+  State<CustomToolTipWidget> createState() => _CustomToolTipWidgetState();
 }
 
-class _ToolTipWidgetState extends State<ToolTipWidget>
+class _CustomToolTipWidgetState extends State<CustomToolTipWidget>
     with TickerProviderStateMixin {
   Offset? position;
 
@@ -328,12 +323,12 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
     var paddingBottom = isArrowUp ? 0.0 : 27.0;
 
     if (!widget.showArrow) {
-      paddingTop = 10;
-      paddingBottom = 10;
+      paddingTop = 15;
+      paddingBottom = 15;
     }
 
-    const arrowWidth = 18.0;
-    const arrowHeight = 9.0;
+    const arrowWidth = 30.0;
+    const arrowHeight = 20.0;
 
     if (!widget.disableScaleAnimation && widget.isTooltipDismissed) {
       _scaleAnimationController.reverse();
@@ -376,30 +371,19 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                     children: [
                       if (widget.showArrow)
                         Positioned(
-                          left: _getLeft() == null
-                              ? null
-                              : (widget.position!.getCenter() -
-                                  (arrowWidth / 2) -
-                                  (_getLeft() ?? 0)),
-                          right: _getLeft() == null
-                              ? (MediaQuery.of(context).size.width -
-                                      widget.position!.getCenter()) -
-                                  (_getRight() ?? 0) -
-                                  (arrowWidth / 2)
-                              : null,
-                          child: CustomPaint(
-                            painter: _Arrow(
-                              strokeColor: widget.tooltipBackgroundColor!,
-                              strokeWidth: 10,
-                              paintingStyle: PaintingStyle.fill,
-                              isUpArrow: isArrowUp,
-                            ),
-                            child: const SizedBox(
-                              height: arrowHeight,
-                              width: arrowWidth,
-                            ),
-                          ),
-                        ),
+                            right: 10,
+                            child: CustomPaint(
+                              painter: _Arrow(
+                                strokeColor: widget.tooltipBackgroundColor!,
+                                strokeWidth: 2,
+                                paintingStyle: PaintingStyle.fill,
+                                isUpArrow: isArrowUp,
+                              ),
+                              child: const SizedBox(
+                                height: arrowHeight,
+                                width: arrowWidth,
+                              ),
+                            )),
                       Padding(
                         padding: EdgeInsets.only(
                           top: isArrowUp ? arrowHeight - 1 : 0,
@@ -409,7 +393,9 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                           borderRadius: widget.tooltipBorderRadius ??
                               BorderRadius.circular(8.0),
                           child: GestureDetector(
-                            onTap: widget.onTooltipTap,
+                            onTap: () {
+                              //widget.onTooltipTap
+                            },
                             child: Container(
                               width: tooltipWidth,
                               padding: widget.tooltipPadding,
@@ -419,6 +405,25 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                                     ? CrossAxisAlignment.start
                                     : CrossAxisAlignment.center,
                                 children: <Widget>[
+                                  //todo
+                                  Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Padding(
+                                        padding: widget.indctorPadding ??
+                                            EdgeInsets.zero,
+                                        child: Text(
+                                            "${widget.currentWidgetId}/${widget.totalWidgets}",
+                                            style: widget.indctorStyle),
+                                      ),
+                                      widget.isLast!
+                                          ? const SizedBox.shrink()
+                                          : IconButton(
+                                              onPressed: widget.onDismiss,
+                                              icon: const Icon(Icons.close)),
+                                    ],
+                                  ),
                                   widget.title != null
                                       ? Padding(
                                           padding: widget.titlePadding ??
@@ -438,6 +443,7 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                                           ),
                                         )
                                       : const SizedBox.shrink(),
+
                                   Padding(
                                     padding: widget.descriptionPadding ??
                                         EdgeInsets.zero,
@@ -454,6 +460,9 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                                                 ),
                                               ),
                                     ),
+                                  ),
+                                  Container(
+                                    child: widget.buttonWidget,
                                   ),
                                 ],
                               ),
@@ -487,7 +496,9 @@ class _ToolTipWidgetState extends State<ToolTipWidget>
                 child: Material(
                   color: Colors.transparent,
                   child: GestureDetector(
-                    onTap: widget.onTooltipTap,
+                    onTap: () {
+                      //widget.onTooltipTap
+                    },
                     child: Container(
                       padding: EdgeInsets.only(
                         top: paddingTop,
@@ -538,7 +549,7 @@ class _Arrow extends CustomPainter {
 
   _Arrow(
       {this.strokeColor = Colors.black,
-      this.strokeWidth = 3,
+      this.strokeWidth = 1,
       this.paintingStyle = PaintingStyle.stroke,
       this.isUpArrow = true});
 
